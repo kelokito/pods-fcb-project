@@ -1,0 +1,90 @@
+{
+  "match_id": 266871,
+  "match_date": "2015-02-08",
+  "kick_off": "21:00:00.000",
+  "competition": {
+    "competition_id": 11,
+    "country_name": "Spain",
+    "competition_name": "La Liga"
+  },
+  "season": {
+    "season_id": 26,
+    "season_name": "2014/2015"
+  },
+  "home_team": {
+    "home_team_id": 215,
+    "home_team_name": "Athletic Club",
+    "home_team_gender": "male",
+    "home_team_group": null,
+    "country": {
+      "id": 214,
+      "name": "Spain"
+    },
+    "managers": [
+      {
+        "id": 227,
+        "name": "Ernesto Valverde Tejedor",
+        "nickname": "Ernesto Valverde",
+        "dob": "1964-02-09",
+        "country": {
+          "id": 214,
+          "name": "Spain"
+        }
+      }
+    ]
+  },
+  "away_team": {
+    "away_team_id": 217,
+    "away_team_name": "Barcelona",
+    "away_team_gender": "male",
+    "away_team_group": null,
+    "country": {
+      "id": 214,
+      "name": "Spain"
+    },
+    "managers": [
+      {
+        "id": 793,
+        "name": "Luis Enrique Mart\u00ednez Garc\u00eda",
+        "nickname": "Luis Enrique",
+        "dob": "1970-05-08",
+        "country": {
+          "id": 214,
+          "name": "Spain"
+        }
+      }
+    ]
+  },
+  "home_score": 2,
+  "away_score": 5,
+  "match_status": "available",
+  "match_status_360": "scheduled",
+  "last_updated": "2023-07-24T21:46:02.129374",
+  "last_updated_360": "2021-06-13T16:17:31.694",
+  "metadata": {
+    "data_version": "1.1.0",
+    "shot_fidelity_version": "2",
+    "xy_fidelity_version": "2"
+  },
+  "match_week": 22,
+  "competition_stage": {
+    "id": 1,
+    "name": "Regular Season"
+  },
+  "stadium": {
+    "id": 345,
+    "name": "San Mam\u00e9s Barria",
+    "country": {
+      "id": 214,
+      "name": "Spain"
+    }
+  },
+  "referee": {
+    "id": 180,
+    "name": "Antonio Miguel Mateu Lahoz",
+    "country": {
+      "id": 214,
+      "name": "Spain"
+    }
+  }
+}
