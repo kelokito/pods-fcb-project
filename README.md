@@ -28,7 +28,7 @@ pods-fcb-project/
 │       ├── barcelona_2014_2015/        # downloaded match JSON files
 │           ├── events/         # downloaded event JSON files
 │           ├── matches/        # downloaded match JSON files 
-|           ├── csvs/           # downloaded event CSV files per match
+|           └── csv/            # downloaded event CSV files per match
 |       └── barcelona_2014_2015.csv     # downloaded event CSV files merged
 |  
 |   ├── get_all_matches_barcelona.py
