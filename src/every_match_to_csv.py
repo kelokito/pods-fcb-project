@@ -12,22 +12,14 @@ for filename in os.listdir(EVENTS_DIR):
     if not filename.endswith(".json"):
         continue
 
-    # ------------------------------
-    # Extract match_id
-    # ------------------------------
     match_id = filename.replace(".json", "")
     events_path = os.path.join(EVENTS_DIR, filename)
     match_path = os.path.join(MATCHES_DIR, f"{match_id}.json")
 
-    # ------------------------------
-    # Load event file
-    # ------------------------------
     with open(events_path, "r", encoding="utf-8") as f:
         events = json.load(f)
 
-    # ------------------------------
-    # Load match metadata
-    # ------------------------------
+    # ---- Load match metadata ----
     try:
         with open(match_path, "r", encoding="utf-8") as f:
             match = json.load(f)
@@ -42,46 +34,55 @@ for filename in os.listdir(EVENTS_DIR):
         elif away_team.lower() == "barcelona":
             match_won = away_score > home_score
         else:
-            match_won = None  # Should NEVER happen
+            match_won = None
 
     except FileNotFoundError:
-        print(f"⚠️ No match metadata available for match_id {match_id}. Setting match_won = None.")
+        print(f"⚠ No match metadata for {match_id}, match_won set to None.")
         match_won = None
 
+    # -----------------------------------------------------
+    # 1) Identify ALL possessions containing goals
+    # -----------------------------------------------------
+    goal_possessions = set()
+
+    for ev in events:
+        if ev.get("team", {}).get("name", "").lower() != "barcelona":
+            continue
+
+        if "shot" in ev:
+            if ev["shot"].get("outcome", {}).get("name") == "Goal":
+                goal_possessions.add(ev.get("possession", None))
+
+    # -----------------------------------------------------
+    # 2) Process events, tagging entire possession as goal
+    # -----------------------------------------------------
     rows = []
 
-    # ------------------------------
-    # Process each event
-    # ------------------------------
     for ev in events:
 
         team = ev.get("team", {}).get("name")
-
-        # Keep only Barcelona events
         if team is None or team.lower() != "barcelona":
             continue
 
-        case_id = f"{match_id}-{ev.get('possession', 0)}"
+        possession = ev.get("possession")
+        case_id = f"{match_id}-{possession}"
+
         activity = ev["type"]["name"]
         resource = ev.get("player", {}).get("name")
 
-        # Location
+        # Coordinates
         x, y = None, None
-        if isinstance(ev.get("location"), list) and len(ev["location"]) == 2:
-            x, y = ev["location"]
+        loc = ev.get("location")
+        if isinstance(loc, list) and len(loc) == 2:
+            x, y = loc
 
-        # Detect if the event is a goal
-        finalize_in_goal = False
-        if "shot" in ev:
-            outcome = ev["shot"].get("outcome", {}).get("name")
-            if outcome == "Goal":
-                finalize_in_goal = True
+        # Tag all events of a goal possession
+        finalize_in_goal = possession in goal_possessions
 
+        # Add event
         rows.append({
             "match_id": match_id,
-            "match_won": match_won,
             "case_id": case_id,
-            "finalize_in_goal": finalize_in_goal,
             "activity": activity,
             "timestamp": ev.get("timestamp"),
             "resource": resource,
@@ -89,14 +90,35 @@ for filename in os.listdir(EVENTS_DIR):
             "period": ev.get("period"),
             "minute": ev.get("minute"),
             "second": ev.get("second"),
-            "possession": ev.get("possession"),
+            "possession": possession,
             "x": x,
-            "y": y
+            "y": y,
+            "finalize_in_goal": finalize_in_goal,
+            "match_won": match_won
         })
 
-    # ------------------------------
+        # If this event is the shot → add synthetic Goal event
+        if "shot" in ev and ev["shot"].get("outcome", {}).get("name") == "Goal":
+            rows.append({
+                "match_id": match_id,
+                "case_id": case_id,
+                "activity": "Goal",
+                "timestamp": ev.get("timestamp"),
+                "resource": resource,
+                "team": team,
+                "period": ev.get("period"),
+                "minute": ev.get("minute"),
+                "second": ev.get("second"),
+                "possession": possession,
+                "x": x,
+                "y": y,
+                "finalize_in_goal": True,
+                "match_won": match_won
+            })
+
+    # -----------------------------------------------------
     # Save CSV
-    # ------------------------------
+    # -----------------------------------------------------
     df = pd.DataFrame(rows)
     out_path = os.path.join(OUTPUT_DIR, f"{match_id}.csv")
     df.to_csv(out_path, index=False)
