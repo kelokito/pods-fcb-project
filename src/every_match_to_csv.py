@@ -102,6 +102,25 @@ def classify_zone(x, y):
 
 
 # -----------------------------------------------------
+# 5b. Classify vertical zone
+# -----------------------------------------------------
+def classify_vertical(y):
+    if y < 0:
+        y = 0
+    if y > 80:
+        y = 80
+
+    if y < 20:
+        return "left"
+    elif y < 40:
+        return "center-left"
+    elif y < 60:
+        return "center-right"
+    else:
+        return "right"
+
+
+# -----------------------------------------------------
 # 6. Classify possession type based on action count
 # -----------------------------------------------------
 def classify_possession_type(n):
@@ -142,6 +161,8 @@ def build_event_rows(events, match_id, goal_possessions, action_counts, match_wo
         if zone is None:
             continue  # REMOVE row if zone classification fails
 
+        vertical = classify_vertical(y)
+
         finalize_in_goal = possession in goal_possessions
 
         possession_type = classify_possession_type(action_counts[possession])
@@ -159,6 +180,7 @@ def build_event_rows(events, match_id, goal_possessions, action_counts, match_wo
             "second": ev.get("second"),
             "possession": possession,
             "zone": zone,
+            "vertical": vertical,
             "finalize_in_goal": finalize_in_goal,
             "match_won": match_won,
             "possession_type": possession_type
@@ -178,6 +200,7 @@ def build_event_rows(events, match_id, goal_possessions, action_counts, match_wo
                 "second": ev.get("second"),
                 "possession": possession,
                 "zone": zone,
+                "vertical": vertical,
                 "finalize_in_goal": True,
                 "match_won": match_won,
                 "possession_type": possession_type
