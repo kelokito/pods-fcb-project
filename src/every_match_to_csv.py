@@ -206,6 +206,18 @@ def build_event_rows(events, match_id, goal_possessions, action_counts, match_wo
                 "possession_type": possession_type
             })
 
+    # -----------------------------------------------------
+    # 8. Add position_until_finish
+    # -----------------------------------------------------
+    case_indices = defaultdict(list)
+    for i, r in enumerate(rows):
+        case_indices[r["case_id"]].append(i)
+
+    for cid, indices in case_indices.items():
+        total = len(indices)
+        for k, idx in enumerate(indices):
+            rows[idx]["position_until_finish"] = total - 1 - k
+
     return rows
 
 
